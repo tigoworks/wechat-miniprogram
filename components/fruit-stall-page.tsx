@@ -6,13 +6,6 @@ import { Card, CardContent } from "@/components/ui/card"
 export default function FruitStallPage() {
   return (
     <MiniProgramShell title="南京精实水果档口">
-      <div className="bg-white dark:bg-gray-900 p-3 flex items-center space-x-2">
-        <div className="w-8 h-8 bg-yellow-400 dark:bg-yellow-500 rounded-md flex items-center justify-center">
-          <span className="text-white font-bold">档</span>
-        </div>
-        <span className="text-base font-medium text-gray-900 dark:text-white">南京精实水果档口</span>
-      </div>
-
       <div className="p-3 space-y-3">
         {/* 业绩卡片 - 优化布局和间距 */}
         <Card className="shadow-sm border-0 rounded-xl overflow-hidden bg-white dark:bg-gray-800">

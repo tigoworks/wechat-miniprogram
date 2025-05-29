@@ -203,12 +203,12 @@ export default function ProductManagementPage() {
                 {/* 价格信息 */}
                 <div className="mb-3">
                   <div className="flex items-center space-x-2 mb-1">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">预计销售：</span>
                     <span className="text-lg font-bold text-red-500 dark:text-red-400">¥{product.currentPrice}</span>
                     <span className="text-sm text-gray-600 dark:text-gray-400">/{product.unit}</span>
                     <span className="text-sm text-gray-600 dark:text-gray-400">约</span>
                     <span className="text-lg font-bold text-red-500 dark:text-red-400">¥{product.unitPrice}</span>
                     <span className="text-sm text-gray-600 dark:text-gray-400">/{product.unitType}</span>
-                    <span className="text-sm text-gray-500 dark:text-gray-500 ml-auto">{product.stockUnit}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-600 dark:text-gray-400">预计收入：</span>

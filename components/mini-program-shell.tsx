@@ -1,6 +1,10 @@
+"use client"
+
 import type React from "react"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, Search, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
 
 interface MiniProgramShellProps {
   title: string
@@ -9,12 +13,27 @@ interface MiniProgramShellProps {
 }
 
 export default function MiniProgramShell({ title, children, className }: MiniProgramShellProps) {
-  // 获取当前时间
-  const currentTime = new Date().toLocaleTimeString("zh-CN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  })
+  const [currentTime, setCurrentTime] = useState("")
+
+  useEffect(() => {
+    // 初始化时间
+    updateTime()
+    
+    // 设置定时器，每分钟更新一次时间
+    const timer = setInterval(updateTime, 60000)
+    
+    // 清理定时器
+    return () => clearInterval(timer)
+  }, [])
+
+  const updateTime = () => {
+    const time = new Date().toLocaleTimeString("zh-CN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })
+    setCurrentTime(time)
+  }
 
   return (
     <div
@@ -77,7 +96,12 @@ export default function MiniProgramShell({ title, children, className }: MiniPro
       </div>
 
       {/* 标题栏 - 更符合微信小程序风格 */}
-      <div className="h-12 px-4 flex items-center justify-between relative bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 border-b border-orange-600 dark:border-orange-700">
+      <div 
+        className="h-12 px-4 flex items-center justify-between relative border-b border-orange-600 dark:border-orange-700"
+        style={{
+          background: 'linear-gradient(to right, rgb(248, 125, 51), rgb(246, 106, 31))',
+        }}
+      >
         <button className="p-1.5 rounded-full hover:bg-white/20 dark:hover:bg-white/10 transition-colors">
           <ChevronLeft className="h-5 w-5 text-white" />
         </button>

@@ -10,6 +10,9 @@ import FeeDetailsPage from "@/components/fee-details-page"
 import FeePaymentDetailPage from "@/components/fee-payment-detail-page"
 import FeePaymentDetailInfoPage from "@/components/fee-payment-detail-info-page"
 import ProductManagementPage from "@/components/product-management-page"
+import PaymentRecordsPage from "@/components/payment-records-page"
+import SettlementStatementPage from "@/components/settlement-statement-page"
+import { Smartphone, Monitor } from "lucide-react"
 
 // 页面配置
 const pages = [
@@ -19,10 +22,13 @@ const pages = [
   { id: "fee-payment-detail", title: "费用缴纳明细", component: FeePaymentDetailPage },
   { id: "fee-payment-detail-info", title: "费用缴纳详情", component: FeePaymentDetailInfoPage },
   { id: "product-management", title: "商品管理", component: ProductManagementPage },
+  { id: "payment-records", title: "缴费记录", component: PaymentRecordsPage },
+  { id: "settlement-statement", title: "已结算对账单", component: SettlementStatementPage },
 ]
 
 export default function Overview() {
-  const [activeTab, setActiveTab] = useState(pages[0].id)
+  const [activeTab, setActiveTab] = useState("fruit-stall")
+  const [viewMode, setViewMode] = useState<"mobile" | "desktop">("mobile")
 
   // 处理锚点跳转
   const scrollToPage = (id: string) => {
@@ -33,32 +39,57 @@ export default function Overview() {
     }
   }
 
+  const ActivePage = pages.find((page) => page.id === activeTab)?.component
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 p-6 transition-colors duration-300">
       <div className="max-w-8xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">微信小程序页面预览</h1>
-          <ThemeToggle />
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between h-16">
+              <h1 className="text-xl font-semibold text-gray-900">水果摊管理系统</h1>
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant={viewMode === "mobile" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("mobile")}
+                  className="flex items-center"
+                >
+                  <Smartphone className="h-4 w-4 mr-2" />
+                  小程序
+                </Button>
+                <Button
+                  variant={viewMode === "desktop" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("desktop")}
+                  className="flex items-center"
+                >
+                  <Monitor className="h-4 w-4 mr-2" />
+                  PC端
+                </Button>
+              </div>
+            </div>
+            <div className="flex space-x-4 pb-2">
+              {pages.map((page) => (
+                <button
+                  key={page.id}
+                  onClick={() => setActiveTab(page.id)}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    activeTab === page.id
+                      ? "bg-orange-500 text-white"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  {page.title}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* 导航栏 - 优化样式 */}
-        <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-md rounded-xl mb-8 p-2 transition-colors duration-300">
-          <div className="flex overflow-x-auto p-2 scrollbar-hide space-x-2">
-            {pages.map((page) => (
-              <Button
-                key={page.id}
-                variant={activeTab === page.id ? "default" : "ghost"}
-                className={`whitespace-nowrap transition-all duration-300 ${
-                  activeTab === page.id
-                    ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg scale-105"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400"
-                }`}
-                onClick={() => scrollToPage(page.id)}
-              >
-                {page.title}
-              </Button>
-            ))}
-          </div>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">微信小程序页面预览</h1>
+          <ThemeToggle />
         </div>
 
         {/* 页面展示区 - 重新布局 */}
@@ -67,11 +98,11 @@ export default function Overview() {
             const PageComponent = page.component
             return (
               <div key={page.id} id={page.id} className="flex flex-col items-center">
-                <Card className="shadow-2xl dark:shadow-gray-900/40 rounded-2xl overflow-hidden border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 transition-all duration-300 hover:shadow-3xl hover:scale-[1.02] transform">
-                  <PageComponent />
+                <Card className="shadow-2xl rounded-2xl overflow-hidden border-0 bg-gradient-to-br from-white to-gray-50 transition-all duration-300 hover:shadow-3xl hover:scale-[1.02] transform">
+                  {viewMode === "mobile" ? <PageComponent /> : <div className="text-gray-500 text-center py-12">PC端页面开发中...</div>}
                 </Card>
                 <div className="mt-4 text-center">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">{page.title}</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">{page.title}</h3>
                   <div className="w-12 h-1 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full mx-auto"></div>
                 </div>
               </div>

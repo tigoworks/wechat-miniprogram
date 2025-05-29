@@ -1,15 +1,39 @@
+"use client"
+
 import MiniProgramShell from "@/components/mini-program-shell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronDown, ChevronRight, Eye, Shield } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { useState } from "react"
+import { format } from "date-fns"
+import { zhCN } from "date-fns/locale"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+import { DateRange } from "react-day-picker"
 
 export default function AccountPage() {
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: undefined,
+    to: undefined,
+  })
+
   return (
     <MiniProgramShell title="我的账户">
       <div className="flex flex-col h-full">
         {/* 账户总览 - 优化布局和视觉层次 */}
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 p-4 text-white">
+        <div 
+          className="p-4 text-white"
+          style={{
+            background: 'linear-gradient(to right, rgb(248, 125, 51), rgb(246, 106, 31))',
+          }}
+        >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center">
               <span className="text-base">总金额(元)</span>
@@ -71,44 +95,74 @@ export default function AccountPage() {
 
         {/* 交易记录 - 优化标签页和列表样式 */}
         <div className="flex-1 bg-gray-100 dark:bg-gray-950">
-          <Tabs defaultValue="unsettled" className="w-full">
+          <Tabs defaultValue="withdrawable" className="w-full">
             <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
               <div className="flex items-center justify-between px-3 h-12">
                 <TabsList className="bg-transparent p-0 h-auto">
                   <TabsTrigger
                     value="withdrawable"
-                    className="px-3 py-2 h-8 data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-orange-500 dark:data-[state=active]:border-orange-400 rounded-none text-gray-600 dark:text-gray-400 data-[state=active]:text-orange-500 dark:data-[state=active]:text-orange-400"
+                    className="px-3 py-2 h-8 data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-orange-500 dark:data-[state=active]:border-orange-400 rounded-none text-gray-600 dark:text-gray-400 data-[state=active]:text-orange-500 dark:data-[state=active]:text-orange-400 transition-colors duration-200"
                   >
                     可提现
                   </TabsTrigger>
                   <TabsTrigger
                     value="unsettled"
-                    className="px-3 py-2 h-8 data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-orange-500 dark:data-[state=active]:border-orange-400 rounded-none text-gray-600 dark:text-gray-400 data-[state=active]:text-orange-500 dark:data-[state=active]:text-orange-400"
+                    className="px-3 py-2 h-8 data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-orange-500 dark:data-[state=active]:border-orange-400 rounded-none text-gray-600 dark:text-gray-400 data-[state=active]:text-orange-500 dark:data-[state=active]:text-orange-400 transition-colors duration-200"
                   >
                     未结算
                   </TabsTrigger>
                 </TabsList>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 h-8 px-3"
-                >
-                  请选择日期 <ChevronDown className="h-3 w-3 ml-1 opacity-60" />
-                </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={cn(
+                        "text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 h-8 px-3 transition-colors duration-200",
+                        !date?.from && "text-gray-500"
+                      )}
+                    >
+                      {date?.from ? (
+                        date.to ? (
+                          <>
+                            {format(date.from, "yyyy.MM.dd", { locale: zhCN })} ~{" "}
+                            {format(date.to, "yyyy.MM.dd", { locale: zhCN })}
+                          </>
+                        ) : (
+                          format(date.from, "yyyy.MM.dd", { locale: zhCN })
+                        )
+                      ) : (
+                        "请选择日期"
+                      )}
+                      <ChevronDown className="h-3 w-3 ml-1 opacity-60" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="end">
+                    <Calendar
+                      initialFocus
+                      mode="range"
+                      defaultMonth={date?.from}
+                      selected={date}
+                      onSelect={setDate}
+                      numberOfMonths={2}
+                      locale={zhCN}
+                      className="rounded-md border"
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
             <TabsContent value="withdrawable" className="mt-0">
-              {/* 可提现内容为空，因为日期选择已经移到上方 */}
-            </TabsContent>
-
-            <TabsContent value="unsettled" className="mt-0">
-              {/* 日期选择已经移到上方，这里直接显示交易记录 */}
-
-              {/* 交易记录列表 - 优化视觉层次和间距 */}
-              <div className="space-y-3 mt-2">
-                {/* 5月23日记录 */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3 mt-2"
+              >
+                {/* 可提现列表 */}
                 <div className="bg-white dark:bg-gray-900 shadow-sm">
                   <div className="bg-orange-50 dark:bg-gray-800 px-4 py-2.5 flex justify-between items-center">
                     <div className="text-gray-700 dark:text-gray-300 text-sm">收入/赠付日期: 2025.05.23</div>
@@ -211,7 +265,131 @@ export default function AccountPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="unsettled" className="mt-0">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3 mt-2"
+              >
+                {/* 未结算列表 - 保持原有内容 */}
+                <div className="bg-white shadow-sm">
+                  <div className="bg-orange-50 px-4 py-2.5 flex justify-between items-center">
+                    <div className="text-gray-700 text-sm">收入/赠付日期: 2025.05.23</div>
+                    <div className="text-orange-500 font-medium text-sm">收入总额: ¥61437.47</div>
+                  </div>
+
+                  <div className="border-b border-gray-100">
+                    <div className="flex justify-between items-center px-4 py-3">
+                      <div className="text-gray-700">供货收入</div>
+                      <div className="flex items-center">
+                        <span className="text-orange-500 font-medium mr-2">¥63699.85</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-b border-gray-100">
+                    <div className="flex justify-between items-center px-4 py-3">
+                      <div className="text-gray-700">售后赠付</div>
+                      <div className="flex items-center">
+                        <span className="text-gray-700 font-medium mr-2">-¥2415.71</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center px-4 py-3">
+                      <div className="text-gray-700">订单尾款</div>
+                      <div className="flex items-center">
+                        <span className="text-orange-500 font-medium mr-2">¥153.32</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5月22日记录 */}
+                <div className="bg-white shadow-sm">
+                  <div className="bg-orange-50 px-4 py-2.5 flex justify-between items-center">
+                    <div className="text-gray-700 text-sm">收入/赠付日期: 2025.05.22</div>
+                    <div className="text-gray-700 font-medium text-sm">收入总额: -¥20829.95</div>
+                  </div>
+
+                  <div className="border-b border-gray-100">
+                    <div className="flex justify-between items-center px-4 py-3">
+                      <div className="text-gray-700">供货收入</div>
+                      <div className="flex items-center">
+                        <span className="text-orange-500 font-medium mr-2">¥0</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-b border-gray-100">
+                    <div className="flex justify-between items-center px-4 py-3">
+                      <div className="text-gray-700">售后赠付</div>
+                      <div className="flex items-center">
+                        <span className="text-gray-700 font-medium mr-2">-¥20524.51</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center px-4 py-3">
+                      <div className="text-gray-700">订单尾款</div>
+                      <div className="flex items-center">
+                        <span className="text-gray-700 font-medium mr-2">-¥305.44</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5月18日记录 */}
+                <div className="bg-white shadow-sm">
+                  <div className="bg-orange-50 px-4 py-2.5 flex justify-between items-center">
+                    <div className="text-gray-700 text-sm">收入/赠付日期: 2025.05.18</div>
+                    <div className="text-gray-700 font-medium text-sm">收入总额: -¥309.83</div>
+                  </div>
+
+                  <div className="border-b border-gray-100">
+                    <div className="flex justify-between items-center px-4 py-3">
+                      <div className="text-gray-700">供货收入</div>
+                      <div className="flex items-center">
+                        <span className="text-orange-500 font-medium mr-2">¥0</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-b border-gray-100">
+                    <div className="flex justify-between items-center px-4 py-3">
+                      <div className="text-gray-700">售后赠付</div>
+                      <div className="flex items-center">
+                        <span className="text-gray-700 font-medium mr-2">-¥309.83</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center px-4 py-3">
+                      <div className="text-gray-700">订单尾款</div>
+                      <div className="flex items-center">
+                        <span className="text-gray-700 font-medium mr-2">¥0</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
             </TabsContent>
           </Tabs>
         </div>
