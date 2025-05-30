@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ThemeToggle } from "@/components/theme-toggle"
 import FruitStallPage from "@/components/fruit-stall-page"
 import AccountPage from "@/components/account-page"
 import FeeDetailsPage from "@/components/fee-details-page"
@@ -45,35 +44,12 @@ export default function Overview() {
     <div className="min-h-screen bg-gray-50 p-6 transition-colors duration-300">
       <div className="max-w-8xl mx-auto">
         <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-16">
-              <h1 className="text-xl font-semibold text-gray-900">水果摊管理系统</h1>
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant={viewMode === "mobile" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setViewMode("mobile")}
-                  className="flex items-center"
-                >
-                  <Smartphone className="h-4 w-4 mr-2" />
-                  小程序
-                </Button>
-                <Button
-                  variant={viewMode === "desktop" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setViewMode("desktop")}
-                  className="flex items-center"
-                >
-                  <Monitor className="h-4 w-4 mr-2" />
-                  PC端
-                </Button>
-              </div>
-            </div>
+          <div className="container mx-auto px-4 pt-4">
             <div className="flex space-x-4 pb-2">
               {pages.map((page) => (
                 <button
                   key={page.id}
-                  onClick={() => setActiveTab(page.id)}
+                  onClick={() => scrollToPage(page.id)}
                   className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                     activeTab === page.id
                       ? "bg-orange-500 text-white"
@@ -87,13 +63,8 @@ export default function Overview() {
           </div>
         </div>
 
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">微信小程序页面预览</h1>
-          <ThemeToggle />
-        </div>
-
         {/* 页面展示区 - 重新布局 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 mt-8">
           {pages.map((page) => {
             const PageComponent = page.component
             return (
